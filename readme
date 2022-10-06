@@ -1,1 +1,3 @@
-run: 
+Add your server IP  at hosts file the:
+
+run:  ansible-playbook  site.yml
