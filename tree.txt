@@ -1,0 +1,19 @@
+.
+├── MicrosoftDefenderATPOnboardingLinuxServer.py
+├── ansible.cfg
+├── hosts
+├── roles
+│   ├── db
+│   │   └── tasks
+│   │       └── main.yml
+│   ├── storage
+│   │   └── tasks
+│   │       └── main.yml
+│   └── webservers
+│       ├── files
+│       │   └── MicrosoftDefenderATPOnboardingLinuxServer.py
+│       └── tasks
+│           └── main.yml
+└── tree.txt
+
+8 directories, 8 files

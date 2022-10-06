@@ -1,0 +1,63 @@
+- name: add proxy lines
+  ansible.builtin.lineinfile:
+    path: /etc/yum.conf
+    line: proxy=http://10.253.31.79:3128
+
+- name: system update
+  yum :
+    name: "*"
+    state: latest
+    update_cache: true
+
+- name: Create MDATP directories
+  file:
+    path: /etc/opt/microsoft/mdatp/
+    recurse: true
+    state: directory
+    mode: 0755
+    owner: root
+    group: root
+
+- name: Register mdatp_onboard.json
+  stat:
+    path: /etc/opt/microsoft/mdatp/mdatp_onboard.json
+  register: mdatp_onboard
+
+- name: install unzip
+  yum:
+    name: unzip
+    state: latest
+
+
+- name: Extract WindowsDefenderATPOnboardingPackage.zip into /etc/opt/microsoft/mdatp
+  unarchive:
+    src: WindowsDefenderATPOnboardingPackage.zip
+    dest: /etc/opt/microsoft/mdatp
+    mode: 0600
+    owner: root
+    group: root
+  when: not mdatp_onboard.stat.exists
+
+- name: Add Microsoft DNF/YUM key
+  rpm_key:
+    state: present
+    key: https://packages.microsoft.com/keys/microsoft.asc
+  when: ansible_os_family == "RedHat"
+
+- name: Add  Microsoft yum repository for MDATP
+  yum_repository:
+    name: packages-microsoft-prod
+    description: Microsoft Defender for Endpoint
+    file: microsoft-prod
+    baseurl: https://packages.microsoft.com/rhel/7/prod/
+    gpgcheck: yes
+    enabled: Yes
+  when: ansible_os_family == "RedHat" 
+
+- name: Install MDATP
+  yum:
+    name: mdatp
+    state: latest
+    enablerepo: packages-microsoft-prod
+
+
